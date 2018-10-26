@@ -53,7 +53,7 @@ if __name__ == '__main__':
     print('')
   
     msg=input()
-    while True:
+    while (msg != '\x18'):
         send.put(msg)
         msg=input()
     
