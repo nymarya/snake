@@ -1,62 +1,40 @@
-from socket import socket,AF_INET,SOCK_STREAM
-from threading import Thread
- 
-#classe para manipular o socket
-class Send:
-    def __init__(self):
-        self.__msg=''
-        self.new=True
-        self.con=None
-    
-    def put(self,msg):
-        self.__msg=msg
-        if self.con != None:
-            #envia um mensagem atravez de uma conexão socket
-            self.con.send(str.encode(self.__msg))
- 
-    def get(self):
-        return self.__msg
- 
-    def loop(self):
-        return self.new
- 
-#função esperar - Thread
-def esperar(tcp,send,host='localhost',port=5000):
-    destino=(host,port)
-    #conecta a um servidor
-    tcp.connect(destino)
-    
-    while send.loop():
-        print('Conectado a ',host,'.')
-        #atribui a conexão ao manipulador
-        send.con=tcp
+# Python program to implement client side of chat room. 
+import socket 
+import select 
+import sys 
 
-        while send.loop():
-            #aceita uma mensagem
-            msg=tcp.recv(1024)
-            if not msg: break
-            print(str(msg,'utf-8'))
- 
-if __name__ == '__main__':
-    print('Digite o nome ou IP do servidor(localhost): ')
-    host=input()
-  
-    if host=='':
-        host = '127.0.0.1'
-  
-    #cria um socket
-    tcp=socket(AF_INET,SOCK_STREAM)
-    send=Send()
-    #cria um Thread e usa a função esperar com dois argumentos
-    processo=Thread(target=esperar,args=(tcp,send,host))
-    processo.start()
-    print('')
-  
-    msg=input()
-    while (msg != '\x18'):
-        send.put(msg)
-        msg=input()
-    
-    processo.join()
-    tcp.close()
-    exit()
+server = socket.socket(socket.AF_INET, socket.SOCK_STREAM) 
+if len(sys.argv) != 3: 
+	print "Correct usage: script, IP address, port number"
+	exit() 
+IP_address = str(sys.argv[1]) 
+Port = int(sys.argv[2]) 
+server.connect((IP_address, Port)) 
+
+while True: 
+
+	# maintains a list of possible input streams 
+	sockets_list = [sys.stdin, server] 
+
+	""" There are two possible input situations. Either the 
+	user wants to give manual input to send to other people, 
+	or the server is sending a message to be printed on the 
+	screen. Select returns from sockets_list, the stream that 
+	is reader for input. So for example, if the server wants 
+	to send a message, then the if condition will hold true 
+	below.If the user wants to send a message, the else 
+	condition will evaluate as true"""
+	read_sockets,write_socket, error_socket = select.select(sockets_list,[],[]) 
+
+	for socks in read_sockets: 
+		if socks == server: 
+			message = socks.recv(2048) 
+			print message 
+		else: 
+			message = sys.stdin.readline() 
+			server.send(message) 
+			sys.stdout.write("<You>") 
+			sys.stdout.write(message) 
+			sys.stdout.flush() 
+server.close() 
+
