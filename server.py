@@ -100,9 +100,6 @@ while True:
 	which contains the IP address of the client that just 
 	connected"""
 	conn, addr = server.accept() 
-	
-	# quando aceitar conexao, cria cobra
-	
 
 	"""Maintains a list of clients for ease of broadcasting 
 	a message to all available people in the chatroom"""
@@ -110,6 +107,9 @@ while True:
 
 	# prints the address of the user that just connected 
 	print addr[0] + " connected"
+
+	# quando aceitar conexao, cria cobra
+	#game.createSnake(addr[0])
 
 	# creates and individual thread for every user 
 	# that connects 
