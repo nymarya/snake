@@ -9,8 +9,6 @@ from random import randint
 
 
 class game:
-
-
     def __init__(self):
         self.clients = {}
         random.seed()
@@ -43,7 +41,7 @@ class game:
         food = [10,20]                                                     # First food co-ordinates
         
         self.createSnake(1)
-        #self.createSnake(2)
+        self.createSnake(2)
 
         win.addch(food[0], food[1], '*')                                   # Prints the food
 
@@ -114,7 +112,7 @@ class game:
                 newClient.insert(0, snake)
                 newClient.insert(1, key)
                 newClient.insert(2, prevKey)
-                self.clients[1] = newClient
+                self.clients[key] = newClient
                 
 
 

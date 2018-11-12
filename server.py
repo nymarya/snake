@@ -109,7 +109,8 @@ while True:
 	print addr[0] + " connected"
 
 	# quando aceitar conexao, cria cobra
-	#game.createSnake(addr[0])
+	#game.createSnake(1)
+
 
 	# creates and individual thread for every user 
 	# that connects 
