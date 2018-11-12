@@ -99,14 +99,15 @@ def gamethread(key, win, score, food, snake):
                     food = [randint(1, 18), randint(1, 58)]                 # Calculating next food's coordinates
                     if food in snake: food = []
                 win.addch(food[0], food[1], '*')
+                broadcast(food[0], food[1], '*')
+
             else:    
                 last = snake.pop()                                          # [1] If it does not eat the food, length decreases
                 win.addch(last[0], last[1], ' ')
-            
-            win.addch(snake[0][0], snake[0][1], '#')
+                broadcast(last[0], last[1], ' ') 
 
-        
-            broadcast(pickle.dumps(win))
+            win.addch(snake[0][0], snake[0][1], '#')
+            broadcast(snake[0][0], snake[0][1], '#')
 
         curses.endwin()
 
@@ -114,8 +115,6 @@ def gamethread(key, win, score, food, snake):
 def clientthread(conn, addr): 
 
     # sends a message to the client whose user object is conn 
-    conn.send("Welcome to this chatroom!") 
-
     while True:
             try:
                 message = conn.recv(2048) 
@@ -142,15 +141,15 @@ def clientthread(conn, addr):
 """Using the below function, we broadcast the message to all 
 clients who's object is not the same as the one sending 
 the message """
-def broadcast(message): 
-    if clients!=connection: 
+def broadcast(pos1, pos2, message): 
+    for client in list_of_clients: 
         try: 
-            clients.send(message) 
+            client.send(str(pos1) + "," + str(pos2) + "," + message +",") 
         except: 
-            clients.close() 
+            client.close() 
 
             # if the link is broken, we remove the client 
-            remove(clients) 
+            remove(client) 
 
 """The following function simply removes the object 
 from the list that was created at the beginning of 
@@ -161,7 +160,7 @@ def remove(connection):
 
 processo=Thread(target=gamethread, args=(key, win, score, food, snake))  
 processo.start()
-'''
+
 while True: 
 
     """Accepts a connection request and stores two parameters, 
@@ -181,7 +180,7 @@ while True:
     # that connects 
     start_new_thread(clientthread,(conn,addr))
      
-'''
+
 
 #conn.close() 
 server.close() 
