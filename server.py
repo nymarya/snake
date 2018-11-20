@@ -42,6 +42,8 @@ list_of_clients = []
 
 def clientthread(conn, addr): 
 
+    game.createSnake(addr)
+
     while True: 
             try: 
                 message = conn.recv(2048) 
@@ -104,10 +106,11 @@ while True:
     list_of_clients.append(conn) 
 
     # prints the address of the user that just connected 
-    # print addr[0] + " connected"
+    #print addr[0] + " connected"
 
+  
     # quando aceitar conexao, cria cobra
-    game.createSnake(1)
+    #print game.clients
 
 
     # creates and individual thread for every user 
