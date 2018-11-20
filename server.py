@@ -4,7 +4,7 @@ import select
 import sys 
 from thread import *
 import snake
-
+from time import sleep
 
 """The first argument AF_INET is the address domain of the 
 socket. This is used when we have an Internet Domain with 
@@ -68,16 +68,16 @@ def clientthread(conn, addr):
 """Using the below function, we broadcast the message to all 
 clients who's object is not the same as the one sending 
 the message """
-def broadcast(message, connection): 
-    for clients in list_of_clients: 
-        if clients!=connection: 
-            try: 
-                clients.send(message) 
-            except: 
-                clients.close() 
+def broadcast(pos1, pos2, message): 
+    sleep(0.5) 
+    for client in list_of_clients: 
+        try: 
+            client.send(str(pos1) + "," + str(pos2) + "," + message +",") 
+        except: 
+            client.close() 
 
-                # if the link is broken, we remove the client 
-                remove(clients) 
+            # if the link is broken, we remove the client 
+            remove(client)  
 
 """The following function simply removes the object 
 from the list that was created at the beginning of 
@@ -90,7 +90,7 @@ while True:
 
     # get instance of game
     game = snake.game()
-    game.execute()
+    game.execute(broadcast)
 
 
     """Accepts a connection request and stores two parameters, 

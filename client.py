@@ -38,7 +38,7 @@ if len(sys.argv) != 3:
 IP_address = str(sys.argv[1]) 
 Port = int(sys.argv[2]) 
 server.connect((IP_address, Port)) 
-
+"""
 curses.initscr()
 win = curses.newwin(20, 60, 0, 0)  
 win.keypad(1)
@@ -46,7 +46,8 @@ curses.noecho()
 curses.curs_set(0)
 win.border(0)
 win.nodelay(1)
-#win = None
+"""
+win = None
 key = curses.KEY_RIGHT
 
 while key != 27:
@@ -65,8 +66,8 @@ while key != 27:
     below.If the user wants to send a message, the else 
     condition will evaluate as true"""
     read_sockets,write_socket, error_socket = select.select(sockets_list,[],[]) 
-    #start_new_thread(screenthread,(read_sockets,server,win))
-    start_new_thread(sendthread,(win,server, key))
+    start_new_thread(screenthread,(read_sockets,server,win))
+    #start_new_thread(sendthread,(win,server, key))
 
 curses.endwin()
 server.close() 

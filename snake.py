@@ -27,7 +27,7 @@ class game:
 
 
 
-    def execute(self):
+    def execute(self, broadcast):
         curses.initscr()
         win = curses.newwin(20, 60, 0, 0)  
         win.keypad(1)
@@ -105,7 +105,7 @@ class game:
                     win.addch(last[0], last[1], ' ')
                 
                 win.addch(snake[0][0], snake[0][1], '#')
-
+                broadcast(snake[0][0], snake[0][1], '#')
 
                 # atualiza valores no map do cliente
                 newClient = []
