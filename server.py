@@ -42,6 +42,7 @@ list_of_clients = []
 
 def clientthread(conn, addr): 
 
+    # quando aceitar conexao, cria cobra
     game.createSnake(addr)
 
     while True: 
@@ -53,7 +54,8 @@ def clientthread(conn, addr):
                     user who just sent the message on the server 
                     terminal"""
                     key = int(message)
-                    print(key)
+                    game.moveSnake(addr, key)
+                    #print(key)
 
                     # Calls broadcast function to send message to all 
                     #message_to_send = "<" + addr[0] + "> " + message 
@@ -107,11 +109,6 @@ while True:
 
     # prints the address of the user that just connected 
     #print addr[0] + " connected"
-
-  
-    # quando aceitar conexao, cria cobra
-    #print game.clients
-
 
     # creates and individual thread for every user 
     # that connects 

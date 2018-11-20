@@ -17,6 +17,20 @@ class game:
 
 
 
+    def moveSnake(self, addr, move):
+        client = self.clients[addr]
+        key = client[1]
+        if( move == 97 ):
+            key = KEY_LEFT      # move pra esquerda
+        if( move == 100 ):
+            key = KEY_RIGHT     # move pra direita
+        if( move == 119):
+            key = KEY_UP        # move pra cima
+        if( move == 115):
+            key = KEY_DOWN      # move pra baixo
+        self.clients[addr] = client
+
+
     def createSnake(self, addr):
         client = []
         rand1 = randint(0,10)
@@ -52,8 +66,6 @@ class game:
                     
                     prevKey = key                                                  # Previous key pressed
                     event = win.getch()
-                    #moves = [KEY_UP, KEY_DOWN, KEY_LEFT, KEY_RIGHT ]
-                    #event = random.shuffle(moves)
                     key = key if event == -1 else event 
 
 
