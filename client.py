@@ -1,80 +1,96 @@
-# Python program to implement client side of chat room. 
-import socket 
-import select 
-import sys 
-import curses
-from thread import *
+import sys
+from PyQt4 import QtGui, QtCore
 from threading import Thread
-from time import sleep
+from client_socket import Listener
+from socket import AF_INET, socket, SOCK_STREAM
 
-def screenthread(rs,server,win):
-    '''Thread that updates the window'''
-    while True:
-        message = server.recv(2048) 
-        data = str(message).split(',')
-        try:
-            win[0].addch(int(data[0]), int(data[1]), data[2])
-        except:
-            break
+class SnakeClient(QtGui.QWidget):
+    keyPressed = QtCore.pyqtSignal(QtCore.QEvent)
+    prevKey = None
+    def __init__(self, socket_from_client):
+        super(SnakeClient, self).__init__()
+        
+        self.initUI()
+        self.client_socket = socket_from_client
+        self.thread = Listener(socket=self.client_socket)
+        self.connect(self.thread, QtCore.SIGNAL("output(int, int, PyQt_PyObject)"), self.addText)
+        
+    def initUI(self):      
 
-def sendthread(win,server, key):
-    '''Thread that send te key stroke sginal to the server'''
-    while True:
-        prevKey = key
-        event = win.getch()
-        if( event != -1):
-            key =  event
+        self.setGeometry(500, 300, 600, 500)
+        self.setWindowTitle('Snake')
+        self.keyPressed.connect(self.on_key)
+        self.viewer = QtGui.QLabel()
+        self.viewer.setFixedSize(600, 400)
+        pixmap = QtGui.QPixmap(self.viewer.size())
+        pixmap.fill(QtGui.QColor(0, 0, 0))
+        self.viewer.setPixmap(pixmap)
+        
+        layout = QtGui.QGridLayout()
+        layout.addWidget(self.viewer, 1, 0, 1, 1)
+        self.setLayout(layout)
+        self.show() 
+
+    def addText(self, x, y, text):
+        pixmap = self.viewer.pixmap()
+        painter = QtGui.QPainter()
+        painter.begin(pixmap)
+        painter.setPen(QtGui.QColor(255, 255, 255))
+        painter.setFont(QtGui.QFont('Decorative', 10))
+        p= QtCore.QPointF(10*y, 10*x)
+        if(text == ' '):
+            msg = '#'
+            painter.setPen(QtGui.QColor(0, 0, 0))
+            painter.drawText(p, msg)
+            p= QtCore.QPointF((10*y)-1, (10*x)-1)
+            painter.drawText(p, msg)
+            p= QtCore.QPointF((10*y), (10*x)-1)
+            painter.drawText(p, msg)
+            p= QtCore.QPointF((10*y)-1, (10*x))
+            painter.drawText(p, msg)
+            p= QtCore.QPointF((10*y)+1, (10*x)+1)
+            painter.drawText(p, msg)
+            p= QtCore.QPointF((10*y)+1, (10*x))
+            painter.drawText(p, msg)
+            p= QtCore.QPointF((10*y), (10*x)+1)
+        else:
+            msg = text
+        painter.drawText(p, msg)
+        painter.end() 
+        self.viewer.update()
+
+    def keyPressEvent(self, event):
+        super(SnakeClient, self).keyPressEvent(event)
+        self.keyPressed.emit(event) 
+
+    def on_key(self, event):  # this is called whenever the continue button is pressed
+        key = event.key()
+        if event.key() == QtCore.Qt.Key_Q:
+            print ("Killing")
+            self.deleteLater() 
+            server.close() 
+        else:
             # if key pressed changes
-            if( key != prevKey):
-                server.send(str(key))
-                prevKey = key
+            if( key != self.prevKey):
+                self.client_socket.send(bytes(str(key), "utf-8"))
+                self.prevKey = key
+                print (event.key())
+                
+        
+def main():
+    #################################
+    ## Begin client code
+    server = socket(AF_INET, SOCK_STREAM) 
+    if len(sys.argv) != 3: 
+        print ("Correct usage: script, IP address, port number")
+        exit() 
+    IP_address = str(sys.argv[1]) 
+    Port = int(sys.argv[2]) 
+    server.connect((IP_address, Port))
+    app = QtGui.QApplication(sys.argv)
+    ex = SnakeClient(socket_from_client=server)
+    sys.exit(app.exec_())
 
-#################################
-## Begin client code
-server = socket.socket(socket.AF_INET, socket.SOCK_STREAM) 
-if len(sys.argv) != 3: 
-    print "Correct usage: script, IP address, port number"
-    exit() 
-IP_address = str(sys.argv[1]) 
-Port = int(sys.argv[2]) 
-server.connect((IP_address, Port))
 
-curses.initscr()
-win = curses.newwin(20, 60, 0, 0)  
-win.keypad(1)
-curses.noecho()
-curses.curs_set(0)
-win.border(0)
-win.nodelay(1)
-key = curses.KEY_RIGHT
-
-read_sockets = None
-rs = [read_sockets]
-start_new_thread(screenthread,(rs,server,[win]))
-start_new_thread(sendthread,(win,server, key))
-
-receive_thread = Thread(target=receive, args=(rs,server,[win]))
-receive_thread.start()
-receive_thread1 = Thread(target=sendthread, args=(win,server,key))
-receive_thread1.start()
-
-while True:
-    win.border(0)
-    win.addstr(0, 2, 'Score :+ ')                # Printing 'Score' and
-    win.addstr(0, 27, ' SNAKE ')
-    # maintains a list of possible input streams 
-    sockets_list = [sys.stdin, server] 
-
-    """ There are two possible input situations. Either the 
-    user wants to give manual input to send to other people, 
-    or the server is sending a message to be printed on the 
-    screen. Select returns from sockets_list, the stream that 
-    is reader for input. So for example, if the server wants 
-    to send a message, then the if condition will hold true 
-    below.If the user wants to send a message, the else 
-    condition will evaluate as true"""
-    rs[0],write_socket, error_socket = select.select(sockets_list,[],[])
-    
-
-curses.endwin()
-server.close() 
+if __name__ == '__main__':
+    main()

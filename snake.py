@@ -48,7 +48,7 @@ class game:
                     prevKey = client[2]
                                 
                         
-                    win.timeout(150 - (len(snake)/5 + len(snake)/10)%120)          # Increases the speed of Snake as its length increases
+                    win.timeout(300)          # Increases the speed of Snake as its length increases
                     
                     prevKey = key                                                  # Previous key pressed
                     event = win.getch()
@@ -83,10 +83,11 @@ class game:
                             food = [randint(1, 18), randint(1, 58)]                 # Calculating next food's coordinates
                             if food in snake: food = []
                         win.addch(food[0], food[1], '*')
+                        broadcast(food[0], food[1], '*')
                     else:    
                         last = snake.pop()                                          # [1] If it does not eat the food, length decreases
                         win.addch(last[0], last[1], ' ')
-                        broadcast(snake[0][0], snake[0][1], ' ')
+                        broadcast(last[0], last[1], ' ')
                     
                     try:
                         win.addch(snake[0][0], snake[0][1], '#')
