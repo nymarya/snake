@@ -10,15 +10,12 @@ from time import sleep
 def screenthread(rs,server,win):
     '''Thread that updates the window'''
     while True:
-        if(rs[0] is not None):
-            for socks in rs[0]: 
-                if socks == server: 
-                    message = server.recv(2048) 
-                    data = str(message).split(',')
-                    try:
-                        win[0].addch(int(data[0]), int(data[1]), data[2])
-                    except:
-                        break
+        message = server.recv(2048) 
+        data = str(message).split(',')
+        try:
+            win[0].addch(int(data[0]), int(data[1]), data[2])
+        except:
+            break
 
 def sendthread(win,server, key):
     '''Thread that send te key stroke sginal to the server'''
@@ -56,11 +53,15 @@ rs = [read_sockets]
 start_new_thread(screenthread,(rs,server,[win]))
 start_new_thread(sendthread,(win,server, key))
 
+receive_thread = Thread(target=receive, args=(rs,server,[win]))
+receive_thread.start()
+receive_thread1 = Thread(target=sendthread, args=(win,server,key))
+receive_thread1.start()
+
 while True:
     win.border(0)
     win.addstr(0, 2, 'Score :+ ')                # Printing 'Score' and
     win.addstr(0, 27, ' SNAKE ')
-    win.getch()
     # maintains a list of possible input streams 
     sockets_list = [sys.stdin, server] 
 

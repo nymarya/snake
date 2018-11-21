@@ -53,7 +53,7 @@ def clientthread(conn, addr):
                     user who just sent the message on the server 
                     terminal"""
                     key = int(message) 
-
+                    print(key)
                 else: 
                     """message may have no content if the connection 
                     is broken, in this case we remove the connection"""
