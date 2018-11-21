@@ -16,7 +16,7 @@ class SnakeClient(QtGui.QWidget):
         self.connect(self.thread, QtCore.SIGNAL("output(int, int, PyQt_PyObject)"), self.addText)
         
     def initUI(self):      
-
+        """ Init components from User Interface"""
         self.setGeometry(500, 300, 600, 500)
         self.setWindowTitle('Snake')
         self.keyPressed.connect(self.on_key)
@@ -32,6 +32,9 @@ class SnakeClient(QtGui.QWidget):
         self.show() 
 
     def addText(self, x, y, text):
+        """ Add text to the screen when the thread Listener sends
+            a signal
+        """
         pixmap = self.viewer.pixmap()
         painter = QtGui.QPainter()
         painter.begin(pixmap)
@@ -39,6 +42,7 @@ class SnakeClient(QtGui.QWidget):
         painter.setFont(QtGui.QFont('Decorative', 10))
         p= QtCore.QPointF(10*y, 10*x)
         if(text == ' '):
+            # Erase the snake's tail
             msg = '#'
             painter.setPen(QtGui.QColor(0, 0, 0))
             painter.drawText(p, msg)
@@ -60,10 +64,15 @@ class SnakeClient(QtGui.QWidget):
         self.viewer.update()
 
     def keyPressEvent(self, event):
+        """Listen to the key press from client.
+        """
         super(SnakeClient, self).keyPressEvent(event)
         self.keyPressed.emit(event) 
 
-    def on_key(self, event):  # this is called whenever the continue button is pressed
+    def on_key(self, event):
+        """ If the key pressed is different from the one stroked previously,
+            send the signal to the server.
+        """
         key = event.key()
         if event.key() == QtCore.Qt.Key_Q:
             print ("Killing")
