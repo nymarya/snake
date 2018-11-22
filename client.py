@@ -83,7 +83,7 @@ class SnakeClient(QtGui.QWidget):
             if( key != self.prevKey):
                 self.client_socket.send(bytes(str(key), "utf-8"))
                 self.prevKey = key
-                print (event.key())
+                #print (event.key())
                 
         
 def main():
