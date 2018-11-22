@@ -11,34 +11,34 @@ from threading import Thread
 import time
 
 class game:
+
+    clients = {}
     def __init__(self):
-        self.clients = {}
         random.seed()
 
-
-
     def moveSnake(self, addr, move):
-        client = self.clients[addr]
-        snake = client[0]
-        key = client[1]
-        prevKey = client[2]
-        prevKey = key           # atribui a atual pra anterior
-        if( move == 65 ):
-            key = KEY_LEFT      # move pra esquerda
-        if( move == 68 ):
-            key = KEY_RIGHT     # move pra direita
-        if( move == 87 ):
-            key = KEY_UP        # move pra cima
-        if( move == 83 ):
-            key = KEY_DOWN      # move pra baixo
-        
-        print("teste" + str(key))
-        newClient = []
-        newClient.insert(0, snake)
-        newClient.insert(1, key)
-        newClient.insert(2, prevKey)
-        self.clients[addr] = newClient
-        print()
+        try:
+            client = self.clients[addr]
+            snake = client[0]
+            key = client[1]
+            prevKey = client[2]
+            prevKey = key           # atribui a atual pra anterior
+            if( move == 65 ):
+                key = KEY_LEFT      # move pra esquerda
+            if( move == 68 ):
+                key = KEY_RIGHT     # move pra direita
+            if( move == 87 ):
+                key = KEY_UP        # move pra cima
+            if( move == 83 ):
+                key = KEY_DOWN      # move pra baixo
+            
+            newClient = []
+            newClient.insert(0, snake)
+            newClient.insert(1, key)
+            newClient.insert(2, prevKey)
+            self.clients[addr] = newClient
+        except Exception as e: 
+            print("help")
 
 
     def createSnake(self, addr):
@@ -49,10 +49,7 @@ class game:
         
         client.insert(1, KEY_RIGHT)
         client.insert(2, KEY_RIGHT)
-        self.clients[addr] = client
-
-
-        
+        self.clients[addr] = client 
 
 
     def gamethread(self, key, win, score, food, broadcast):
@@ -82,11 +79,11 @@ class game:
                     time.sleep(1)
                     
                     #prevKey = key                                                 
-                    #event = win.getch()
+                    event = win.getch()
                     #event = key
                     #key = key if event == -1 else event 
                     
-                    '''
+                    
                     if key not in [KEY_LEFT, KEY_RIGHT, KEY_UP, KEY_DOWN, 27]:     # If an invalid key is pressed
                         key = prevKey
 
@@ -99,8 +96,7 @@ class game:
                         snake.insert(0, [snake[0][0] + (key == KEY_DOWN and 1) + (key == KEY_UP and -1), snake[0][1] + (key == KEY_LEFT and -1) + (key == KEY_RIGHT and 1)])
 
                     else:
-                        '''
-                    #key = prevKey
+                        key = prevKey
                     snake.insert(0, [snake[0][0] + (key == KEY_DOWN and 1) + (key == KEY_UP and -1), snake[0][1] + (key == KEY_LEFT and -1) + (key == KEY_RIGHT and 1)])
 
 
@@ -108,31 +104,32 @@ class game:
                     if snake[0][0] == 0 or snake[0][0] == 19 or snake[0][1] == 0 or snake[0][1] == 59: break
 
 
-                    
-                    if snake[0] == food:                                            # When snake eats the food
-                        food = []
-                        score += 1
-                        while food == []:
-                            food = [randint(1, 18), randint(1, 58)]                 # Calculating next food's coordinates
-                            if food in snake: food = []
-                        win.addch(food[0], food[1], '*')
-                        broadcast(food[0], food[1], '*')
-                    else:    
-                        last = snake.pop()                                          # [1] If it does not eat the food, length decreases
-                        win.addch(last[0], last[1], ' ')
-                        broadcast(last[0], last[1], ' ')
-                      
-                            
-                    
                     try:
+                        if snake[0] == food:                                            # When snake eats the food
+                            food = []
+                            score += 1
+                            while food == []:
+                                food = [randint(1, 18), randint(1, 58)]                 # Calculating next food's coordinates
+                                if food in snake: food = []
+                            win.addch(food[0], food[1], '*')
+                            broadcast(food[0], food[1], '*')
+                        else:    
+                            last = snake.pop()                                          # [1] If it does not eat the food, length decreases
+                            win.addch(last[0], last[1], ' ')
+                            broadcast(last[0], last[1], ' ')
+                      
+
                         win.addch(snake[0][0], snake[0][1], '#')
                         broadcast(snake[0][0], snake[0][1], '#')
                     except:
+                        # if there are more than one snakes, kill the snake
+                        # if there is only one snake, end game
                         break
                     
                     
                     # atualiza valores no map do cliente
                     self.clients[id][0] = snake
+                    print ("")
             break          
 
     def execute(self, broadcast):
@@ -149,7 +146,7 @@ class game:
         food = [10,20]                                                     # First food co-ordinates
         
         win.addch(food[0], food[1], '*')                                   # Prints the food
-
+        broadcast(food[0], food[1], '*')
 
         key = KEY_RIGHT
        

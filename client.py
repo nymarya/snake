@@ -76,7 +76,6 @@ class SnakeClient(QtGui.QWidget):
         key = event.key()
         if event.key() == QtCore.Qt.Key_Q:
             self.deleteLater() 
-            server.close() 
         else:
             # if key pressed changes
             if( key != self.prevKey):
@@ -98,6 +97,7 @@ def main():
     app = QtGui.QApplication(sys.argv)
     ex = SnakeClient(socket_from_client=server)
     sys.exit(app.exec_())
+    server.close() 
 
 
 if __name__ == '__main__':

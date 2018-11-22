@@ -45,7 +45,7 @@ list_of_clients = []
 def clientthread(conn, addr): 
 
     # quando aceitar conexao, cria cobra
-    game.createSnake(addr)
+    game.createSnake(conn)
 
     while True: 
         try: 
@@ -57,8 +57,7 @@ def clientthread(conn, addr):
                 terminal"""
 
                 key = int(message)
-                game.moveSnake(addr, key)
-
+                game.moveSnake(conn, key)
             else: 
                 """message may have no content if the connection 
                 is broken, in this case we remove the connection"""
@@ -99,6 +98,10 @@ while True:
     which contains the IP address of the client that just 
     connected"""
     conn, addr = server.accept() 
+    print("AA")
+    print(conn)
+    print("BB")
+    print(addr)
 
     """Maintains a list of clients for ease of broadcasting 
     a message to all available people in the chatroom"""
