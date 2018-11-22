@@ -69,7 +69,7 @@ def clientthread(conn, addr):
                 is broken, in this case we remove the connection"""
                 remove(conn) 
 
-        except: 
+        except Exception as e: 
             continue
 
 """Using the below function, we broadcast the message to all 

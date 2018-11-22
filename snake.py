@@ -32,12 +32,13 @@ class game:
         if( move == 83 ):
             key = KEY_DOWN      # move pra baixo
         
-        print("teste" + key)
+        print("teste" + str(key))
         newClient = []
         newClient.insert(0, snake)
         newClient.insert(1, key)
         newClient.insert(2, prevKey)
         self.clients[addr] = newClient
+        print()
 
 
     def createSnake(self, addr):
@@ -131,11 +132,7 @@ class game:
                     
                     
                     # atualiza valores no map do cliente
-                    newClient = []
-                    newClient.insert(0, snake)
-                    newClient.insert(1, key)
-                    newClient.insert(2, prevKey)
-                    self.clients[id] = newClient
+                    self.clients[id][0] = snake
             break          
 
     def execute(self, broadcast):
