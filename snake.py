@@ -16,6 +16,9 @@ class game:
         random.seed()
 
 
+    def killSnake(self, addr):
+        del self.clients[addr]
+
 
     def moveSnake(self, addr, move):
         client = self.clients[addr]

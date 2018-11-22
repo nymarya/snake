@@ -78,12 +78,12 @@ the message """
 def broadcast(pos1, pos2, message): 
     for client in list_of_clients: 
         try: 
-            client.send(str(pos1) + "," + str(pos2) + "," + message +",") 
+            client[0].send(str(pos1) + "," + str(pos2) + "," + message +",") 
         except: 
-            client.close() 
-
+            client[0].close() 
+            game.killSnake(client[1])
             # if the link is broken, we remove the client 
-            remove(client)  
+            remove(client[0])  
 
 """The following function simply removes the object 
 from the list that was created at the beginning of 
@@ -107,7 +107,7 @@ while True:
 
     """Maintains a list of clients for ease of broadcasting 
     a message to all available people in the chatroom"""
-    list_of_clients.append(conn) 
+    list_of_clients.append([conn, addr]) 
 
     # prints the address of the user that just connected 
     #print addr[0] + " connected"
