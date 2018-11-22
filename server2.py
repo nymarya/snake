@@ -7,6 +7,7 @@ from threading import Thread
 import curses
 from curses import KEY_RIGHT, KEY_LEFT, KEY_UP, KEY_DOWN
 from random import randint
+from time import sleep
 
 """The first argument AF_INET is the address domain of the 
 socket. This is used when we have an Internet Domain with 
@@ -60,7 +61,6 @@ win.addch(food[0], food[1], '*')
 
 def gamethread(key, win, score, food, snake):
     """"""
-    print("a")
     while True:
         while key != 27:                                                   # While Esc key is not pressed
             win.border(0)
@@ -112,7 +112,7 @@ def gamethread(key, win, score, food, snake):
         curses.endwin()
 
 
-def clientthread(conn, addr): 
+def clientthread(conn, addr, key): 
 
     # sends a message to the client whose user object is conn 
     while True:
@@ -122,8 +122,9 @@ def clientthread(conn, addr):
 
                     """prints the message and address of the 
                     user who just sent the message on the server 
-                    terminal"""
-                    # print "<" + addr[0] + "> " + message 
+                    terminal""" 
+                    key = int(message)
+                    print(key)
 
                     # Calls broadcast function to send message to all 
                     #message_to_send = "<" + addr[0] + "> " + message 
@@ -142,6 +143,7 @@ def clientthread(conn, addr):
 clients who's object is not the same as the one sending 
 the message """
 def broadcast(pos1, pos2, message): 
+    sleep(0.5) 
     for client in list_of_clients: 
         try: 
             client.send(str(pos1) + "," + str(pos2) + "," + message +",") 
@@ -158,8 +160,8 @@ def remove(connection):
     if connection in list_of_clients: 
         list_of_clients.remove(connection) 
 
-processo=Thread(target=gamethread, args=(key, win, score, food, snake))  
-processo.start()
+#processo=Thread(target=gamethread, args=(key, win, score, food, snake))  
+#processo.start()
 
 while True: 
 
@@ -178,7 +180,8 @@ while True:
 
     # creates and individual thread for every user 
     # that connects 
-    start_new_thread(clientthread,(conn,addr))
+    start_new_thread(clientthread,(conn,addr, key))
+    start_new_thread(gamethread,(key, win, score, food, snake))
      
 
 

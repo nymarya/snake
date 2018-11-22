@@ -3,7 +3,9 @@ import socket
 import select 
 import sys 
 from thread import *
+from threading import Thread
 import snake
+from time import sleep
 
 
 """The first argument AF_INET is the address domain of the 
@@ -16,7 +18,7 @@ server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 
 # checks whether sufficient arguments have been provided 
 if len(sys.argv) != 3: 
-    print "Correct usage: script, IP address, port number"
+    print ("Correct usage: script, IP address, port number")
     exit() 
 
 # takes the first argument from command prompt as IP address 
@@ -46,42 +48,42 @@ def clientthread(conn, addr):
     game.createSnake(addr)
 
     while True: 
-            try: 
-                message = conn.recv(2048) 
-                if message: 
+        try: 
+            message = conn.recv(2048) 
+            if message: 
 
-                    """prints the message and address of the 
-                    user who just sent the message on the server 
-                    terminal"""
-                    key = int(message)
-                    game.moveSnake(addr, key)
-                    #print(key)
+                """prints the message and address of the 
+                user who just sent the message on the server 
+                terminal"""
 
-                    # Calls broadcast function to send message to all 
-                    #message_to_send = "<" + addr[0] + "> " + message 
-                    #broadcast(message_to_send, conn) 
+                key = int(message)
+                game.moveSnake(addr, key)
+                print(key)
 
-                else: 
-                    """message may have no content if the connection 
-                    is broken, in this case we remove the connection"""
-                    remove(conn) 
+                # Calls broadcast function to send message to all 
+                #message_to_send = "<" + addr[0] + "> " + message 
+                #broadcast(message_to_send, conn) 
 
-            except: 
-                continue
+            else: 
+                """message may have no content if the connection 
+                is broken, in this case we remove the connection"""
+                remove(conn) 
+
+        except: 
+            continue
 
 """Using the below function, we broadcast the message to all 
 clients who's object is not the same as the one sending 
 the message """
-def broadcast(message, connection): 
-    for clients in list_of_clients: 
-        if clients!=connection: 
-            try: 
-                clients.send(message) 
-            except: 
-                clients.close() 
+def broadcast(pos1, pos2, message): 
+    for client in list_of_clients: 
+        try: 
+            client.send(str(pos1) + "," + str(pos2) + "," + message +",") 
+        except: 
+            client.close() 
 
-                # if the link is broken, we remove the client 
-                remove(clients) 
+            # if the link is broken, we remove the client 
+            remove(client)  
 
 """The following function simply removes the object 
 from the list that was created at the beginning of 
@@ -94,7 +96,7 @@ while True:
 
     # get instance of game
     game = snake.game()
-    game.execute()
+    game.execute(broadcast)
 
 
     """Accepts a connection request and stores two parameters, 
