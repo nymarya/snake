@@ -75,7 +75,6 @@ class SnakeClient(QtGui.QWidget):
         """
         key = event.key()
         if event.key() == QtCore.Qt.Key_Q:
-            print ("Killing")
             self.deleteLater() 
             server.close() 
         else:

@@ -10,7 +10,6 @@ class Listener(QtCore.QThread):
         QtCore.QThread.__init__(self, parent)
         self.client_socket = socket
         self.exiting = False
-        print("a")
         self.start()
 
     def __del__(self):
@@ -22,10 +21,9 @@ class Listener(QtCore.QThread):
         self.start()
     
     def run(self):
-        
-        # Note: This is never called directly. It is called by Qt once the
-        # thread environment has been set up.
-
+        """ Thread receive the message and send the position of the
+            components to the GUI
+        """
         while not self.exiting:
             message = self.client_socket.recv(2048).decode("utf8")
             data = str(message).split(',')
@@ -36,6 +34,5 @@ class Listener(QtCore.QThread):
                 self.emit(SIGNAL("output(int, int, PyQt_PyObject)"),x,y,text)
             except:
                 self.exiting = True
-                break
 
 
