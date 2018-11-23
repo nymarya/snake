@@ -17,11 +17,11 @@ class SnakeClient(QtGui.QWidget):
         
     def initUI(self):      
         """ Init components from User Interface"""
-        self.setGeometry(500, 300, 600, 500)
+        self.setGeometry(500, 300, 700, 500)
         self.setWindowTitle('Snake')
         self.keyPressed.connect(self.on_key)
         self.viewer = QtGui.QLabel()
-        self.viewer.setFixedSize(600, 400)
+        self.viewer.setFixedSize(700, 400)
         pixmap = QtGui.QPixmap(self.viewer.size())
         pixmap.fill(QtGui.QColor(0, 0, 0))
         self.viewer.setPixmap(pixmap)
