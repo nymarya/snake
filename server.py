@@ -75,7 +75,7 @@ def broadcast(pos1, pos2, message):
             client[0].send(str(pos1) + "," + str(pos2) + "," + message +",") 
         except: 
             client[0].close() 
-            game.killSnake(client[1])
+            game.killSnake(client[1], broadcast)
             # if the link is broken, we remove the client 
             remove(client[0])  
 

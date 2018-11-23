@@ -28,11 +28,17 @@ class Listener(QtCore.QThread):
             message = self.client_socket.recv(2048).decode("utf8")
             data = str(message).split(',')
             try:
-                x = int(data[0])
-                y = int(data[1])
-                text = data[2]
-                self.emit(SIGNAL("output(int, int, PyQt_PyObject)"),x,y,text)
-            except:
+                for i in range(0,int((len(data)-1)/3)):
+                    x = int(data[i*3])
+                    print(data[i*3])
+                    y = int(data[i*3+1])
+                    print(data[i*3+1])
+                    text = data[i*3+2]
+                    print(text)
+                    self.emit(SIGNAL("output(int, int, PyQt_PyObject)"),x,y,text)
+            except Exception as e:
+                print(data)
+                print(e)
                 self.exiting = True
 
 

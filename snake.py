@@ -72,39 +72,44 @@ class game:
                 
                 for id, value in self.clients.items():
                 
-                    #recupera um cliente 
                     try:
+                        #recupera um cliente 
                         client = self.clients[id]   
-                    except:
-                        break
 
-                    # recupera o snake do cliente atual
-                    snake = client[0]
-                    # recupera a tecla clicada pelo cliente 
-                    key = client[1]       
-                    # recupera a tecla da iteracao passada
-                    prevKey = client[2]
-                                
-                    # Increases the speed of Snake as its length increases
-                    win.timeout(300) 
-                    time.sleep(5)         
-                    
-                    #prevKey = key                                                 
-                    event = win.getch()
-
-                    snake.insert(0, [snake[0][0] + (key == KEY_DOWN and 1) + (key == KEY_UP and -1), snake[0][1] + (key == KEY_LEFT and -1) + (key == KEY_RIGHT and 1)])
-
-
-                    # Exit if snake crosses the boundaries (Uncomment to enable)
-                    if snake[0][0] == 0 or snake[0][0] == 19 or snake[0][1] == 0 or snake[0][1] == 59: 
-                        if len(self.clients.keys()) > 1:
-                            self.killSnake(id, broadcast)
-                        else:
-                            keep_running = False
-                        break
+                        # recupera o snake do cliente atual
+                        snake = client[0]
+                        # recupera a tecla clicada pelo cliente 
+                        key = client[1]       
+                        # recupera a tecla da iteracao passada
+                        prevKey = client[2]
+                                    
+                        # Increases the speed of Snake as its length increases
+                        win.timeout(200)          
+                        
+                        time.sleep(0.5)
+                                                                        
+                        #event = win.getch()
+                        
+                        # If snake runs over itself
+                        #if snake[0] in snake[1:]: break
+                        if abs(key-prevKey) != 1 or not(min(key, prevKey) != KEY_UP and max(key, prevKey) != KEY_LEFT):
+                            # Calculates the new coordinates of the head of the snake. NOTE: len(snake) increases.
+                            # This is taken care of later at [1].
+                            snake.insert(0, [snake[0][0] + (key == KEY_DOWN and 1) + (key == KEY_UP and -1), snake[0][1] + (key == KEY_LEFT and -1) + (key == KEY_RIGHT and 1)])
+                            
+                        else:    
+                            #key = prevKey
+                            snake.insert(0, [snake[0][0] + (key == KEY_DOWN and 1) + (key == KEY_UP and -1), snake[0][1] + (key == KEY_LEFT and -1) + (key == KEY_RIGHT and 1)])
 
 
-                    try:
+                        # Exit if snake crosses the boundaries (Uncomment to enable)
+                        if snake[0][0] == 0 or snake[0][0] == 39 or snake[0][1] == 0 or snake[0][1] == 79: 
+                            if len(self.clients.keys()) > 1:
+                                self.killSnake(id, broadcast)
+                            else:
+                                keep_running = False
+                            break
+                        
                         if snake[0] == food:                                            # When snake eats the food
                             food = []
                             score += 1
@@ -117,11 +122,16 @@ class game:
                             last = snake.pop()                                          # [1] If it does not eat the food, length decreases
                             win.addch(last[0], last[1], ' ')
                             broadcast(last[0], last[1], ' ')
-                      
+                        
+                        try:
+                            win.addch(snake[0][0], snake[0][1], '#')
+                            broadcast(snake[0][0], snake[0][1], '#')
+                        except:
+                            pass    
+                        # atualiza valores no map do cliente
+                        self.clients[id][0] = snake
 
-                        win.addch(snake[0][0], snake[0][1], '#')
-                        broadcast(snake[0][0], snake[0][1], '#')
-                    except:
+                    except Exception as e:
                         # if there are more than one snakes, kill the snake
                         # if there is only one snake, end game
                         if len(self.clients.keys()) > 1:
@@ -129,15 +139,12 @@ class game:
                         else:
                             keep_running = False
                         break
-                    
-                    
-                    # atualiza valores no map do cliente
-                    self.clients[id][0] = snake
-                      
+                keep_running = True
+            break          
 
     def execute(self, broadcast):
         curses.initscr()
-        win = curses.newwin(20, 60, 0, 0)  
+        win = curses.newwin(40, 80, 0, 0)  
         win.keypad(1)
         curses.noecho()
         curses.curs_set(0)
