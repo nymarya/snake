@@ -45,7 +45,7 @@ list_of_clients = []
 def clientthread(conn, addr): 
 
     # quando aceitar conexao, cria cobra
-    game.createSnake(addr)
+    game.createSnake(conn)
 
     while True: 
         try: 
@@ -57,13 +57,7 @@ def clientthread(conn, addr):
                 terminal"""
 
                 key = int(message)
-                game.moveSnake(addr, key)
-                print(key)
-
-                # Calls broadcast function to send message to all 
-                #message_to_send = "<" + addr[0] + "> " + message 
-                #broadcast(message_to_send, conn) 
-
+                game.moveSnake(conn, key)
             else: 
                 """message may have no content if the connection 
                 is broken, in this case we remove the connection"""
@@ -81,7 +75,7 @@ def broadcast(pos1, pos2, message):
             client[0].send(str(pos1) + "," + str(pos2) + "," + message +",") 
         except: 
             client[0].close() 
-            game.killSnake(client[1])
+            game.killSnake(client[1], broadcast)
             # if the link is broken, we remove the client 
             remove(client[0])  
 
@@ -109,8 +103,6 @@ while True:
     a message to all available people in the chatroom"""
     list_of_clients.append([conn, addr]) 
 
-    # prints the address of the user that just connected 
-    #print addr[0] + " connected"
 
     # creates and individual thread for every user 
     # that connects 

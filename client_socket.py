@@ -10,7 +10,6 @@ class Listener(QtCore.QThread):
         QtCore.QThread.__init__(self, parent)
         self.client_socket = socket
         self.exiting = False
-        print("a")
         self.start()
 
     def __del__(self):
@@ -22,20 +21,24 @@ class Listener(QtCore.QThread):
         self.start()
     
     def run(self):
-        
-        # Note: This is never called directly. It is called by Qt once the
-        # thread environment has been set up.
-
+        """ Thread receive the message and send the position of the
+            components to the GUI
+        """
         while not self.exiting:
             message = self.client_socket.recv(2048).decode("utf8")
             data = str(message).split(',')
             try:
-                x = int(data[0])
-                y = int(data[1])
-                text = data[2]
-                self.emit(SIGNAL("output(int, int, PyQt_PyObject)"),x,y,text)
-            except:
+                for i in range(0,int((len(data)-1)/3)):
+                    x = int(data[i*3])
+                    print(data[i*3])
+                    y = int(data[i*3+1])
+                    print(data[i*3+1])
+                    text = data[i*3+2]
+                    print(text)
+                    self.emit(SIGNAL("output(int, int, PyQt_PyObject)"),x,y,text)
+            except Exception as e:
+                print(data)
+                print(e)
                 self.exiting = True
-                break
 
 

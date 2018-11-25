@@ -17,11 +17,11 @@ class SnakeClient(QtGui.QWidget):
         
     def initUI(self):      
         """ Init components from User Interface"""
-        self.setGeometry(500, 300, 600, 500)
+        self.setGeometry(500, 300, 700, 500)
         self.setWindowTitle('Snake')
         self.keyPressed.connect(self.on_key)
         self.viewer = QtGui.QLabel()
-        self.viewer.setFixedSize(600, 400)
+        self.viewer.setFixedSize(700, 400)
         pixmap = QtGui.QPixmap(self.viewer.size())
         pixmap.fill(QtGui.QColor(0, 0, 0))
         self.viewer.setPixmap(pixmap)
@@ -75,9 +75,7 @@ class SnakeClient(QtGui.QWidget):
         """
         key = event.key()
         if event.key() == QtCore.Qt.Key_Q:
-            print ("Killing")
             self.deleteLater() 
-            server.close() 
         else:
             # if key pressed changes
             if( key != self.prevKey):
@@ -99,6 +97,7 @@ def main():
     app = QtGui.QApplication(sys.argv)
     ex = SnakeClient(socket_from_client=server)
     sys.exit(app.exec_())
+    server.close() 
 
 
 if __name__ == '__main__':
